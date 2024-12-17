@@ -7,8 +7,8 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var counterLabel: UILabel!
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
-    @IBOutlet weak var noButton: UIButton!
-    @IBOutlet weak var yesButton: UIButton!
+    @IBOutlet private weak var noButton: UIButton!
+    @IBOutlet private weak var yesButton: UIButton!
     
     // MARK: - Private Properties
     
@@ -51,11 +51,11 @@ final class MovieQuizViewController: UIViewController {
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         let currentQuestion = questions[currentQuestionIndex]
         let step = convert(model: currentQuestion)
         show(quiz: step)
         imageView.layer.cornerRadius = 20
-        super.viewDidLoad()
     }
     
     // MARK: - Private methods
@@ -67,8 +67,8 @@ final class MovieQuizViewController: UIViewController {
             preferredStyle: .alert)
         
         let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
+            self.currentQuestionIndex = .zero
+            self.correctAnswers = .zero
             
             let firstQuestion = self.questions[self.currentQuestionIndex]
             let viewModel = self.convert(model: firstQuestion)
@@ -105,8 +105,8 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
-    private func showAnswerResult(isCorrect: Bool) {        yesButton.isEnabled = false
-        noButton.isEnabled = false
+    private func showAnswerResult(isCorrect: Bool) {
+        changeStateButton(isEnabled: false)
         if isCorrect {
             correctAnswers += 1
         }
@@ -118,15 +118,19 @@ final class MovieQuizViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.imageView.layer.borderColor = UIColor.clear.cgColor
             self.showNextQuestionOrResults()
-            self.yesButton.isEnabled = true
-            self.noButton.isEnabled = true
+            self.changeStateButton(isEnabled: true)
         }
     }
-
+    
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
+    }
+    
+    private func changeStateButton(isEnabled: Bool) {
+        noButton.isEnabled = isEnabled
+        yesButton.isEnabled = isEnabled
     }
     
     // MARK: - @IBAction-s
@@ -145,6 +149,7 @@ final class MovieQuizViewController: UIViewController {
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 }
+
 /*
  Mock-данные
  
