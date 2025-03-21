@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 protocol StatisticServiceProtocol {
     var gamesCount: Int { get }

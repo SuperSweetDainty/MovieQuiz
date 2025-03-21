@@ -1,6 +1,6 @@
 import UIKit
 
-class ResultAlertPresenter {
+final class ResultAlertPresenter {
     private weak var viewController: UIViewController?
     
     init(viewController: UIViewController) {
@@ -11,9 +11,13 @@ class ResultAlertPresenter {
         let alert = UIAlertController(
             title: model.title,
             message: model.message,
-            preferredStyle: .alert)
+            preferredStyle: .alert
+        )
         
-        let action = UIAlertAction(title: model.buttonText, style: .default) { _ in
+        let action = UIAlertAction(
+            title: model.buttonText,
+            style: .default
+        ) { _ in
             model.completion?()
         }
         
