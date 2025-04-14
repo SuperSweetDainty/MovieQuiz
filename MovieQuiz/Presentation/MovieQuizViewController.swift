@@ -67,8 +67,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
+        QuizStepViewModel(
+            image: UIImage(data: model.imageData) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
@@ -132,12 +132,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showLoadingIndicator() {
-        activityIndicator.isHidden = false
+        activityIndicator.hidesWhenStopped = true
         activityIndicator.startAnimating()
     }
     
     private func showNetworkError(message: String) {
-        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
         
         let model = AlertModel(title: "Ошибка",
                                message: message,
@@ -153,12 +153,24 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        activityIndicator.isHidden = true // скрываем индикатор загрузки
+        activityIndicator.stopAnimating() // скрываем индикатор загрузки
         questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData(with error: Error) {
         showNetworkError(message: error.localizedDescription)
+    }
+    
+    func showImageLoadErrorAlert() {
+        let model = AlertModel(
+            title: "Ошибка",
+            message: "Не удалось загрузить постер фильма.",
+            buttonText: "Попробовать ещё раз"
+        ) { [weak self] in
+            self?.questionFactory?.requestNextQuestion()
+        }
+        
+        alertPresenter?.showAlert(model: model)
     }
     
     // MARK: - @IBAction-s

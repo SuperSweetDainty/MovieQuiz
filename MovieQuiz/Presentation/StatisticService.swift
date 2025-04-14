@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 
 final class StatisticService: StatisticServiceProtocol {
     private let storage: UserDefaults = .standard

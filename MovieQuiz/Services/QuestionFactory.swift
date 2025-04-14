@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 
 final class QuestionFactory: QuestionFactoryProtocol {
     /*
@@ -57,14 +57,17 @@ final class QuestionFactory: QuestionFactoryProtocol {
                 imageData = try Data(contentsOf: movie.resizedImageURL)
             } catch {
                 print("Ошибка загрузки изображения")
+                DispatchQueue.main.async { [weak self] in
+                    self?.delegate?.showImageLoadErrorAlert()
+                }
+                return
             }
             
             let rating = Float(movie.rating) ?? 0
-            
             let text = "Рейтинг этого фильма больше чем 7?"
             let correctAnswer = rating > 7
             
-            let question = QuizQuestion(image: imageData,
+            let question = QuizQuestion(imageData: imageData,
                                         text: text,
                                         correctAnswer: correctAnswer)
             

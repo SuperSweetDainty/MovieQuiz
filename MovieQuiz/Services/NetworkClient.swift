@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 
 // Отвечает за загрузку данных по URL
 struct NetworkClient {
