@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 
 struct QuizResultsViewModel {
     let title: String
