@@ -17,7 +17,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var correctAnswers: Int = .zero
     private let presenter = MovieQuizPresenter()
     private var questionFactory: QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
     private var alertPresenter: ResultAlertPresenter?
     
     // MARK: - Lifecycle
@@ -32,6 +31,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         showLoadingIndicator()
         questionFactory?.loadData()
         alertPresenter = ResultAlertPresenter(viewController: self)
+        presenter.viewController = self
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -39,7 +39,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question else { return }
         
-        currentQuestion = question
+        presenter.currentQuestion = question
         let viewModel = presenter.convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
@@ -66,7 +66,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
         
     private func showNextQuestionOrResults() {
-        if presenter.isLastQuestion() == true {
+        if presenter.isLastQuestion() {
             statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
             
             let gamesCount = statisticService?.gamesCount ?? 0
@@ -94,7 +94,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         changeStateButton(isEnabled: false)
         if isCorrect {
             correctAnswers += 1
@@ -168,16 +168,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - @IBAction-s
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion else { return }
-        let givenAnswer = true
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion else { return }
-        let givenAnswer = false
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.noButtonClicked()
     }
 }
